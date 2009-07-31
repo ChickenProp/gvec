@@ -1,0 +1,55 @@
+(ns net.philh.gvec
+  (:refer-clojure :exclude (+ - * /))
+  (:use clojure.contrib.generic
+	clojure.contrib.generic.arithmetic
+	clojure.contrib.types))
+
+(deftype ::gvec gvec
+  "Geometrical vector: can be added, multiplied by scalars, and support dot-
+and cross-products."
+  (fn [& vs]
+    (vec-to-gvec vs)))
+
+(defn vec-to-gvec
+  "Returns a geometrical version of a vector."
+  [v]
+  (proxy [clojure.lang.APersistentVector] [(meta v)]
+    (seq [] (seq v))
+    (nth [idx] (nth v idx 0))
+    (count [] (count v))
+    (invoke [idx] (nth v idx 0))
+    (withMeta [m] (vec-to-gvec (with-meta v m)))
+    ))
+
+(derive gvec root-type)
+
+(defmethod + [gvec gvec]
+  [a b]
+  (vec2d (+ (a :x) (b :x))
+	 (+ (a :y) (b :y))))
+(defmethod - gvec
+  [a]
+  (vec2d (- (a :x))
+	 (- (a :y))))
+(defmethod * [gvec Number]
+  [a n]
+  (vec2d (* (a :x) n)
+	 (* (a :y) n)))
+(defmethod * [Number gvec]
+  [n a]
+  (* a n))
+
+(defmulti length nary-dispatch)
+(defmethod length gvec
+  [a]
+  (let [x (a :x)
+	y (a :y)]
+    (Math/sqrt (+ (* x x) (* y y)))))
+
+(defmulti normalise nary-dispatch)
+(defmethod normalise gvec
+  [a]
+  (let [l (length a)]
+    (if (= l 0) a
+	(/ a (length a)))))
+(doc derive)

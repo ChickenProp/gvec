@@ -1,0 +1,25 @@
+net.philh.gvec - geometric vector library for clojure.
+
+Usage: (gvec <args>) creates a gvec. <args> can take multiple forms - see (doc
+gvec). Alternatively, gvec-polar can create one using polar coordinates in up to
+four dimensions. (gvec can do polar coordinates up to three dimensions.) Polar
+coordinate support is admittedly pretty hacky, I needed it to work on hps. I
+intend to improve it in future.
+
+To use it, you need to include clojure.core.generic-arithmetic, and exclude + -
+* / from clojure.core.
+
++ - * / (from generic-arithmetic) work on gvecs as you would expect. + - expect
+all their arguments to be gvecs, / expects only the first to be one, * expects
+exactly one of its arguments to be a gvec but doesn't mind which.
+
+The length and normalise (note spelling, though I'm not sure if that's British
+or American) functions do what you would expect. with-dim and extend work with
+the cardinality of gvecs, and should not usually be important.
+
+gvecs, like normal vectors, are functions of their indices. (gv 0) returns the
+first index, (gv 3) the fourth, etc. Also supported: :x, :y, :z, :w as synonyms
+for 0-3; :r, :theta, :phi to get polar coordinates, and [:pol n] to get
+generalised polar coordinates.
+
+Dot- and cross-products are not currently implemented.
